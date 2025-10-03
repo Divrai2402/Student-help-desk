@@ -4,8 +4,8 @@ A complete, real-time Student Help Desk application built with HTML, CSS, and Ja
 Images Links:
 Image Link 1.https://raw.githubusercontent.com/Divrai2402/Student-help-desk/main/Screenshot%202025-10-04%20004502.png,
 Image Link 2.https://raw.githubusercontent.com/Divrai2402/Student-help-desk/main/Screenshot%202025-10-04%20004502.png,
-Image Link 3.https://raw.githubusercontent.com/Divrai2402/Student-help-desk/main/Screenshot%202025-10-04%20004521.png
-Image Link 4.https://raw.githubusercontent.com/Divrai2402/Student-help-desk/main/Screenshot%202025-10-04%20004735.png
+Image Link 3.https://raw.githubusercontent.com/Divrai2402/Student-help-desk/main/Screenshot%202025-10-04%20004521.png,
+Image Link 4.https://raw.githubusercontent.com/Divrai2402/Student-help-desk/main/Screenshot%202025-10-04%20004735.png,
 
 Features
 User Authentication: Secure sign-up and sign-in with Email/Password and Google Sign-In.
