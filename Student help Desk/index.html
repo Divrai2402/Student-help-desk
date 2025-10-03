@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Help Desk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .ticket-card, .auth-view {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .conversation-bubble {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .details-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-12">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+            <header class="text-center mb-8">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Student Help Desk</h1>
+                    <button id="sign-out-btn" class="hidden bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Sign Out
+                    </button>
+                </div>
+                <p class="text-gray-500 mt-2">Submit a new query or check the status of your existing tickets.</p>
+                <div id="user-info" class="mt-4 text-sm text-gray-600 font-medium">Please sign in to continue.</div>
+            </header>
+            
+            <!-- Login/Signup View -->
+            <div id="login-view" class="auth-view">
+                <div class="max-w-md mx-auto">
+                    <div class="mb-4 flex border-b">
+                        <button id="show-signin-btn" class="flex-1 py-2 text-center font-semibold text-indigo-600 border-b-2 border-indigo-600">Sign In</button>
+                        <button id="show-signup-btn" class="flex-1 py-2 text-center font-semibold text-gray-500">Sign Up</button>
+                    </div>
+                    <div id="auth-error" class="hidden text-red-500 text-center p-2 mb-4 rounded-md bg-red-50 border border-red-200"></div>
+                    <form id="signin-form" class="space-y-4">
+                        <div>
+                            <label for="signin-email" class="block text-sm font-medium text-gray-600">Email Address</label>
+                            <input type="email" id="signin-email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="signin-password" class="block text-sm font-medium text-gray-600">Password</label>
+                            <input type="password" id="signin-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Sign In</button>
+                    </form>
+                    <form id="signup-form" class="hidden space-y-4">
+                        <div>
+                            <label for="signup-name" class="block text-sm font-medium text-gray-600">Full Name</label>
+                            <input type="text" id="signup-name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="signup-email" class="block text-sm font-medium text-gray-600">Email Address</label>
+                            <input type="email" id="signup-email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="signup-password" class="block text-sm font-medium text-gray-600">Password (min. 6 characters)</label>
+                            <input type="password" id="signup-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create Account</button>
+                    </form>
+                    <div class="my-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-300"></div><span class="flex-shrink mx-4 text-gray-400">or</span><div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <button id="google-login-btn" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm inline-flex items-center justify-center">
+                        <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.022,36.213,44,30.561,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                        Sign in with Google
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content (hidden until login) -->
+            <div id="main-content" class="hidden">
+                <section id="ticket-form-section" class="mb-10">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Submit a New Ticket</h2>
+                    <form id="ticket-form" class="space-y-4">
+                        <div>
+                            <label for="issue" class="block text-sm font-medium text-gray-600">Describe your issue</label>
+                            <textarea id="issue" rows="4" placeholder="Please provide as much detail as possible..." required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Submit Ticket</button>
+                    </form>
+                </section>
+
+                <section id="tickets-list-section">
+                    <h2 id="tickets-header" class="text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Your Tickets</h2>
+                    <div id="tickets-list" class="space-y-4">
+                        <p id="loading-tickets" class="text-gray-500">Loading tickets...</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, where, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
+        const firebaseConfig = {
+          apiKey: "AIzaSyCPkypJ-HZKsKekeeGm03czCS3kaK1cdqk",
+          authDomain: "student-help-desk-9553a.firebaseapp.com",
+          projectId: "student-help-desk-9553a",
+          storageBucket: "student-help-desk-9553a.firebasestorage.app",
+          messagingSenderId: "185727060667",
+          appId: "1:185727060667:web:b06aa6f985e53c341e779e",
+          measurementId: "G-CF5DY8WK94"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth();
+        
+        // --- IMPORTANT: Add your admin UID here ---
+        const adminUIDs = ["ZGbTbYvj5JXpmurIlpp3xyCPAQC3"];
+
+        const loginView = document.getElementById('login-view');
+        const mainContent = document.getElementById('main-content');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        const userInfoDiv = document.getElementById('user-info');
+        const authErrorDiv = document.getElementById('auth-error');
+        const signinForm = document.getElementById('signin-form');
+        const signupForm = document.getElementById('signup-form');
+        const showSigninBtn = document.getElementById('show-signin-btn');
+        const showSignupBtn = document.getElementById('show-signup-btn');
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const ticketForm = document.getElementById('ticket-form');
+        const issueInput = document.getElementById('issue');
+        const ticketsList = document.getElementById('tickets-list');
+        const ticketsHeader = document.getElementById('tickets-header');
+        const loadingTicketsP = document.getElementById('loading-tickets');
+
+        let currentUser = null;
+        let isAdmin = false;
+
+        onAuthStateChanged(auth, user => {
+            currentUser = user;
+            if (user) {
+                isAdmin = adminUIDs.includes(user.uid);
+                loginView.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                signOutBtn.classList.remove('hidden');
+                userInfoDiv.textContent = `Signed in as ${user.displayName || user.email}`;
+                if (isAdmin) {
+                    userInfoDiv.textContent += ' (Admin)';
+                    ticketsHeader.textContent = 'All User Tickets';
+                } else {
+                     ticketsHeader.textContent = 'Your Tickets';
+                }
+                fetchAndDisplayTickets();
+            } else {
+                isAdmin = false;
+                loginView.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+                signOutBtn.classList.add('hidden');
+                userInfoDiv.textContent = 'Please sign in to continue.';
+                ticketsList.innerHTML = '';
+            }
+        });
+
+        showSigninBtn.addEventListener('click', () => {
+            signinForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            showSigninBtn.classList.add('text-indigo-600', 'border-indigo-600');
+            showSignupBtn.classList.remove('text-indigo-600', 'border-indigo-600');
+            authErrorDiv.classList.add('hidden');
+        });
+
+        showSignupBtn.addEventListener('click', () => {
+            signinForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            showSigninBtn.classList.remove('text-indigo-600', 'border-indigo-600');
+            showSignupBtn.classList.add('text-indigo-600', 'border-indigo-600');
+            authErrorDiv.classList.add('hidden');
+        });
+
+        const handleAuthError = (error) => {
+            authErrorDiv.classList.remove('hidden');
+            const messages = { 'auth/invalid-email': 'Please enter a valid email.', 'auth/user-not-found': 'Incorrect email or password.', 'auth/wrong-password': 'Incorrect email or password.', 'auth/email-already-in-use': 'An account with this email already exists.', 'auth/weak-password': 'Password should be at least 6 characters.' };
+            authErrorDiv.textContent = messages[error.code] || 'An error occurred. Please try again.';
+        };
+        
+        signupForm.addEventListener('submit', async e => { e.preventDefault(); try { const cred = await createUserWithEmailAndPassword(auth, signupForm['signup-email'].value, signupForm['signup-password'].value); await updateProfile(cred.user, { displayName: signupForm['signup-name'].value }); } catch (error) { handleAuthError(error); }});
+        signinForm.addEventListener('submit', async e => { e.preventDefault(); try { await signInWithEmailAndPassword(auth, signinForm['signin-email'].value, signinForm['signin-password'].value); } catch (error) { handleAuthError(error); }});
+        googleLoginBtn.addEventListener('click', async () => { try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (error) { handleAuthError(error); }});
+        signOutBtn.addEventListener('click', () => signOut(auth));
+
+        function fetchAndDisplayTickets() {
+            if (!currentUser) return;
+            const ticketsColRef = collection(db, "tickets");
+            const q = isAdmin ? query(ticketsColRef) : query(ticketsColRef, where("userId", "==", currentUser.uid));
+            
+            onSnapshot(q, (snapshot) => {
+                loadingTicketsP.style.display = 'none';
+                ticketsList.innerHTML = ''; 
+                if (snapshot.empty) {
+                    ticketsList.innerHTML = '<p class="text-gray-500 text-center">No tickets found.</p>';
+                    return;
+                }
+
+                const docs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                docs.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+
+                docs.forEach(ticket => {
+                    const ticketElement = document.createElement('div');
+                    ticketElement.className = 'ticket-card bg-gray-50 border border-gray-200 rounded-lg p-4 cursor-pointer transition-shadow hover:shadow-md';
+                    ticketElement.dataset.id = ticket.id;
+
+                    const statusBgColor = ticket.status === 'Open' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800';
+                    
+                    ticketElement.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold text-gray-800">${ticket.studentName} <span class="text-sm font-normal text-gray-500">&lt;${ticket.studentEmail}&gt;</span></p>
+                                <p class="text-gray-600 mt-2 line-clamp-2">${ticket.issue}</p>
+                            </div>
+                            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full ${statusBgColor}">${ticket.status}</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4">Submitted: ${new Date(ticket.createdAt.toDate()).toLocaleString()}</p>
+                        <div class="details-panel mt-4 pt-4 border-t border-gray-200">
+                            <div class="space-y-3 mb-4 conversation-container">
+                                ${ (ticket.conversation || []).map(msg => {
+                                    const isAdminSender = adminUIDs.includes(msg.sender);
+                                    const senderLabel = isAdminSender ? 'Admin' : (msg.senderName || ticket.studentName);
+                                    const bubbleAlignmentClasses = msg.sender === currentUser.uid ? 'bg-indigo-100 ml-auto' : 'bg-gray-200 mr-auto';
+                                    
+                                    return `
+                                    <div class="w-full flex">
+                                        <div class="conversation-bubble p-3 rounded-lg ${bubbleAlignmentClasses}" style="max-width: 75%;">
+                                            <p class="text-xs font-bold mb-1 ${isAdminSender ? 'text-indigo-600' : 'text-gray-600'}">${senderLabel}</p>
+                                            <p class="text-sm text-gray-800">${msg.text}</p>
+                                            <p class="text-xs text-gray-500 text-right mt-1">${new Date(msg.timestamp.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                        </div>
+                                    </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <form class="reply-form flex gap-2">
+                                <textarea name="reply" placeholder="Type your reply..." required class="flex-grow px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"></textarea>
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Reply</button>
+                            </form>
+                             ${ isAdmin ? `<button data-status="${ticket.status}" class="toggle-status-btn mt-4 text-sm text-red-600 hover:text-red-800 font-medium">${ticket.status === 'Open' ? 'Mark as Closed' : 'Re-open Ticket'}</button>` : '' }
+                        </div>
+                    `;
+                    ticketsList.appendChild(ticketElement);
+                });
+            });
+        }
+
+        ticketForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            const newTicket = {
+                studentName: currentUser.displayName,
+                studentEmail: currentUser.email,
+                issue: issueInput.value,
+                status: 'Open',
+                createdAt: new Date(),
+                userId: currentUser.uid,
+                conversation: [{
+                    sender: currentUser.uid,
+                    senderName: currentUser.displayName,
+                    text: issueInput.value,
+                    timestamp: new Date()
+                }]
+            };
+            try {
+                await addDoc(collection(db, "tickets"), newTicket);
+                issueInput.value = '';
+            } catch (error) { console.error("Error adding document: ", error); }
+        });
+
+        ticketsList.addEventListener('click', async (e) => {
+            const ticketCard = e.target.closest('.ticket-card');
+            if (!ticketCard) return;
+
+            // Handle reply form submission
+            if (e.target.closest('.reply-form')) {
+                e.preventDefault();
+                const form = e.target.closest('.reply-form');
+                const replyText = form.reply.value;
+                if (!replyText.trim()) return;
+
+                const ticketId = ticketCard.dataset.id;
+                const newMessage = { sender: currentUser.uid, senderName: currentUser.displayName, text: replyText, timestamp: new Date() };
+                const docRef = doc(db, "tickets", ticketId);
+                try {
+                    await updateDoc(docRef, { conversation: arrayUnion(newMessage) });
+                    form.reset();
+                } catch (error) { console.error('Error sending reply:', error); }
+                return; 
+            }
+            
+            // Handle status toggle for admins
+            if (e.target.classList.contains('toggle-status-btn')) {
+                const ticketId = ticketCard.dataset.id;
+                const newStatus = e.target.dataset.status === 'Open' ? 'Closed' : 'Open';
+                const docRef = doc(db, "tickets", ticketId);
+                try { await updateDoc(docRef, { status: newStatus }); } catch (error) { console.error('Error updating status:', error); }
+                return;
+            }
+
+            // Handle expanding/collapsing the card
+            const detailsPanel = ticketCard.querySelector('.details-panel');
+            if (detailsPanel.style.maxHeight) {
+                detailsPanel.style.maxHeight = null;
+            } else {
+                detailsPanel.style.maxHeight = detailsPanel.scrollHeight + "px";
+            }
+        });
+    </script>
+</body>
+</html>
+
